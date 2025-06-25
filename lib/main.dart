@@ -3,6 +3,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:givelive/provider/auth_provider.dart';
+import 'package:givelive/provider/donation_provider.dart';
+import 'package:givelive/provider/community_provider.dart';
 import 'package:givelive/screens/Login/opt_page.dart';
 import 'package:givelive/screens/Login/signup.dart';
 import 'package:givelive/screens/Login/login_page.dart';
@@ -26,7 +28,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => DonationProvider()),
+        ChangeNotifierProvider(create: (_) => CommunityProvider()),
+      ],
       child: MaterialApp(
           theme: ThemeData(fontFamily: "Poppins"),
           debugShowCheckedModeBanner: false,

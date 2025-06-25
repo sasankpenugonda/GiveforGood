@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:givelive/models.dart';
 import 'package:givelive/screens/alert/org_request.dart';
+import 'package:givelive/screens/Homepage/create_donation.dart';
+import 'package:givelive/screens/Homepage/donation_detail.dart';
+import 'package:givelive/provider/donation_provider.dart';
+import 'package:givelive/provider/community_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
@@ -17,6 +22,15 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<DonationProvider>(context, listen: false).fetchDonations();
+      Provider.of<CommunityProvider>(context, listen: false).fetchCommunities();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double hei = MediaQuery.of(context).size.height;
@@ -121,219 +135,54 @@ class _DetailsPageState extends State<DetailsPage> {
                           fontWeight: FontWeight.w500,
                           fontSize: 0.025 * hei),
                     ),
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to all organization requests
+                      },
+                      child: Text(
+                        "View All",
+                        style: TextStyle(color: red, fontFamily: 'Poppins'),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              Container(
-                height: hei * 0.21,
-                padding: EdgeInsets.symmetric(horizontal: 0.03 * wid),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      InkWell(
-                        onTap: () {},
-                        child: Card(
-                          elevation: 1,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15)),
-                            width: 0.50 * wid,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                    padding: EdgeInsets.fromLTRB(
-                                        0.02 * wid, 0.01 * hei, 0.02 * wid, 0),
-                                    child: Image.asset(
-                                      'assets/Rectangle 43.png',
-                                      fit: BoxFit.fill,
-                                    )),
-                                Container(
-                                  padding: EdgeInsets.fromLTRB(
-                                      0.03 * wid, 0.01 * hei, 0.03 * wid, 0),
-                                  child: Row(children: [
-                                    Text(
-                                      "Nirmala Foundation",
-                                      style: TextStyle(
-                                          fontFamily: "Poppins",
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 0.015 * hei),
-                                    ),
-                                    Icon(
-                                      Icons.verified_sharp,
-                                      color: Color(0xffED413E),
-                                      size: 0.015 * hei,
-                                    )
-                                  ]),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.fromLTRB(
-                                      0.025 * wid, 0, 0.02 * wid, 0),
-                                  child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              child: Icon(
-                                                Icons.add_location,
-                                                color: red,
-                                                size: 0.014 * hei,
-                                              ),
-                                            ),
-                                            Text(
-                                              "Anna Nagar",
-                                              style: TextStyle(
-                                                  fontFamily: "Poppins",
-                                                  fontSize: 0.013 * hei,
-                                                  color: red),
-                                            ),
-                                          ],
-                                        ),
-                                        Text(
-                                          DateFormat('kk:mm a')
-                                              .format(DateTime.now()),
-                                          style: TextStyle(
-                                              fontFamily: "Poppins",
-                                              fontSize: 0.012 * hei,
-                                              color: red),
-                                        )
-                                      ]),
-                                ),
-                                Container(
-                                  height: 0.01 * hei,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20)),
-                                  child: LinearPercentIndicator(
-                                    animation: true,
-                                    animationDuration: 2000,
-                                    width: 0.5 * wid,
-                                    lineHeight: 4,
-                                    percent: 0.40,
-                                    backgroundColor: black,
-                                    progressColor: red,
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 0.03 * wid,
-                                      vertical: 0.004 * hei),
-                                  child: Text(
-                                    "₹ 18000",
-                                    style: TextStyle(
-                                        fontFamily: "Poppins",
-                                        color: red,
-                                        fontSize: 0.015 * hei),
-                                  ),
-                                )
-                              ],
-                            ),
+              // Organization Requests Section
+              Consumer<DonationProvider>(
+                builder: (context, donationProvider, child) {
+                  final orgDonations = donationProvider.donations
+                      .where((d) => d.organizationId != null)
+                      .take(5)
+                      .toList();
+
+                  if (orgDonations.isEmpty) {
+                    return Container(
+                      height: 0.15 * hei,
+                      child: Center(
+                        child: Text(
+                          'No organization requests available',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Colors.grey,
                           ),
                         ),
                       ),
-                      Card(
-                        elevation: 1,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15)),
-                          width: 0.50 * wid,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                  padding: EdgeInsets.fromLTRB(
-                                      0.02 * wid, 0.01 * hei, 0.02 * wid, 0),
-                                  child: Image.asset(
-                                    'assets/Rectangle 43.png',
-                                    fit: BoxFit.fill,
-                                  )),
-                              Container(
-                                padding: EdgeInsets.fromLTRB(
-                                    0.03 * wid, 0.01 * hei, 0.03 * wid, 0),
-                                child: Row(children: [
-                                  Text(
-                                    "Nirmala Foundation",
-                                    style: TextStyle(
-                                        fontFamily: "Poppins",
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 0.015 * hei),
-                                  ),
-                                  Icon(
-                                    Icons.verified_sharp,
-                                    color: Color(0xffED413E),
-                                    size: 0.013 * hei,
-                                  )
-                                ]),
-                              ),
-                              Container(
-                                padding: EdgeInsets.fromLTRB(
-                                    0.025 * wid, 0, 0.03 * wid, 0),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            child: Icon(
-                                              Icons.add_location,
-                                              color: red,
-                                              size: 0.013 * hei,
-                                            ),
-                                          ),
-                                          Text(
-                                            "Anna Nagar",
-                                            style: TextStyle(
-                                                fontFamily: "Poppins",
-                                                fontSize: 0.013 * hei,
-                                                color: red),
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        DateFormat('kk:mm a')
-                                            .format(DateTime.now()),
-                                        style: TextStyle(
-                                            fontFamily: "Poppins",
-                                            fontSize: 0.013 * hei,
-                                            color: red),
-                                      )
-                                    ]),
-                              ),
-                              Container(
-                                height: 0.01 * hei,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20)),
-                                child: LinearPercentIndicator(
-                                  animation: true,
-                                  animationDuration: 2000,
-                                  width: 0.50 * wid,
-                                  lineHeight: 3,
-                                  percent: 0.40,
-                                  backgroundColor: black,
-                                  progressColor: red,
-                                ),
-                              ),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 0.03 * wid),
-                                child: Text(
-                                  "₹ 18000",
-                                  style: TextStyle(
-                                      fontFamily: "Poppins",
-                                      color: red,
-                                      fontSize: 12),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                    );
+                  }
+
+                  return Container(
+                    height: hei * 0.21,
+                    padding: EdgeInsets.symmetric(horizontal: 0.03 * wid),
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: orgDonations.length,
+                      itemBuilder: (context, index) {
+                        final donation = orgDonations[index];
+                        return _buildOrgDonationCard(donation, wid, hei);
+                      },
+                    ),
+                  );
+                },
               ),
               Container(
                 margin: EdgeInsets.only(left: 0.05 * wid),
@@ -347,494 +196,51 @@ class _DetailsPageState extends State<DetailsPage> {
                           fontWeight: FontWeight.w500,
                           fontSize: 0.025 * hei),
                     ),
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to all nearby requests
+                      },
+                      child: Text(
+                        "View All",
+                        style: TextStyle(color: red, fontFamily: 'Poppins'),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              Container(
-                height: hei * 0.20,
-                margin: EdgeInsets.symmetric(horizontal: 0.03 * wid),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(children: [
-                    Card(
-                      elevation: 1,
-                      child: Container(
-                        width: 0.4 * wid,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.only(
-                                  left: 0.02 * wid, top: 0.0015 * hei),
-                              child: Container(
-                                padding: EdgeInsets.only(top: 0.005 * hei),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.circle,
-                                      color: Colors.greenAccent[400],
-                                      size: 10,
-                                    ),
-                                    Text(
-                                      'Active',
-                                      style: TextStyle(
-                                          fontFamily: "Poppins",
-                                          fontSize: 0.013 * hei,
-                                          color: Colors.greenAccent[400]),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0.02 * wid,
-                                  0.005 * hei, 0.02 * wid, 0.005 * hei),
-                              child: Text(
-                                "Need some food for..",
-                                style: TextStyle(
-                                    fontFamily: "Poppins",
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 0.015 * hei),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(
-                                  0.02 * wid, 0.001 * hei, 0, 0),
-                              child: Text(
-                                "Location",
-                                style: TextStyle(
-                                    fontFamily: "Poppins",
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 0.012 * hei,
-                                    color: red),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0.02 * wid, 0, 0, 0),
-                              child: Text(
-                                "T Nagar, Chennai",
-                                style: TextStyle(
-                                  fontFamily: "Poppins",
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 0.012 * hei,
-                                ),
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.02 * wid, 0.005 * hei, 0, 0),
-                                      child: Text(
-                                        "Target",
-                                        style: TextStyle(
-                                            fontFamily: "Poppins",
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 0.012 * hei,
-                                            color: red),
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.02 * wid, 0, 0, 0),
-                                      child: Text(
-                                        "3 A, 2 C",
-                                        style: TextStyle(
-                                          fontFamily: "Poppins",
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 0.012 * hei,
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 0.1 * wid,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.02 * wid, 0.005 * hei, 0, 0),
-                                      child: Text(
-                                        "Time",
-                                        style: TextStyle(
-                                            fontFamily: "Poppins",
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 0.012 * hei,
-                                            color: red),
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.02 * wid, 0, 0, 0),
-                                      child: Text(
-                                        DateFormat('kk:mm a')
-                                            .format(DateTime.now()),
-                                        style: TextStyle(
-                                          fontFamily: "Poppins",
-                                          fontSize: 0.012 * hei,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                            Container(
-                              height: 0.03 * hei,
-                              width: 0.25 * wid,
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 0.02 * wid, vertical: 0.01 * hei),
-                              child: ElevatedButton(
-                                  style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              red)),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                carddetails2()));
-                                  },
-                                  child: Text(
-                                    "View Details",
-                                    style: TextStyle(
-                                        fontFamily: "Poppins",
-                                        fontSize: 0.01 * hei),
-                                  )),
-                            )
-                          ],
+              // Nearby Requests Section
+              Consumer<DonationProvider>(
+                builder: (context, donationProvider, child) {
+                  final nearbyDonations = donationProvider.nearbyDonations.take(5).toList();
+
+                  if (nearbyDonations.isEmpty) {
+                    return Container(
+                      height: 0.15 * hei,
+                      child: Center(
+                        child: Text(
+                          'No nearby requests available',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
+                    );
+                  }
+
+                  return Container(
+                    height: hei * 0.20,
+                    margin: EdgeInsets.symmetric(horizontal: 0.03 * wid),
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: nearbyDonations.length,
+                      itemBuilder: (context, index) {
+                        final donation = nearbyDonations[index];
+                        return _buildNearbyRequestCard(donation, wid, hei);
+                      },
                     ),
-                    Card(
-                      elevation: 1,
-                      child: Container(
-                        width: 0.4 * wid,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.only(
-                                  left: 0.02 * wid, top: 0.0015 * hei),
-                              child: Container(
-                                padding: EdgeInsets.only(top: 0.005 * hei),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.circle,
-                                      color: Colors.greenAccent[400],
-                                      size: 10,
-                                    ),
-                                    Text(
-                                      'Active',
-                                      style: TextStyle(
-                                          fontFamily: "Poppins",
-                                          fontSize: 0.013 * hei,
-                                          color: Colors.greenAccent[400]),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0.02 * wid,
-                                  0.005 * hei, 0.02 * wid, 0.005 * hei),
-                              child: Text(
-                                "Need some food for..",
-                                style: TextStyle(
-                                    fontFamily: "Poppins",
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 0.015 * hei),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(
-                                  0.02 * wid, 0.001 * hei, 0, 0),
-                              child: Text(
-                                "Location",
-                                style: TextStyle(
-                                    fontFamily: "Poppins",
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 0.012 * hei,
-                                    color: red),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0.02 * wid, 0, 0, 0),
-                              child: Text(
-                                "T Nagar, Chennai",
-                                style: TextStyle(
-                                  fontFamily: "Poppins",
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 0.012 * hei,
-                                ),
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.02 * wid, 0.005 * hei, 0, 0),
-                                      child: Text(
-                                        "Target",
-                                        style: TextStyle(
-                                            fontFamily: "Poppins",
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 0.012 * hei,
-                                            color: red),
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.02 * wid, 0, 0, 0),
-                                      child: Text(
-                                        "3 A, 2 C",
-                                        style: TextStyle(
-                                          fontFamily: "Poppins",
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 0.012 * hei,
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 0.1 * wid,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.02 * wid, 0.005 * hei, 0, 0),
-                                      child: Text(
-                                        "Time",
-                                        style: TextStyle(
-                                            fontFamily: "Poppins",
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 0.012 * hei,
-                                            color: red),
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.02 * wid, 0, 0, 0),
-                                      child: Text(
-                                        DateFormat('kk:mm a')
-                                            .format(DateTime.now()),
-                                        style: TextStyle(
-                                          fontFamily: "Poppins",
-                                          fontSize: 0.012 * hei,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                            Container(
-                              height: 0.03 * hei,
-                              width: 0.25 * wid,
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 0.02 * wid, vertical: 0.01 * hei),
-                              child: ElevatedButton(
-                                  style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              red)),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                carddetails2()));
-                                  },
-                                  child: Text(
-                                    "View Details",
-                                    style: TextStyle(
-                                        fontFamily: "Poppins",
-                                        fontSize: 0.01 * hei),
-                                  )),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    Card(
-                      elevation: 1,
-                      child: Container(
-                        width: 0.4 * wid,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.only(
-                                  left: 0.02 * wid, top: 0.0015 * hei),
-                              child: Container(
-                                padding: EdgeInsets.only(top: 0.005 * hei),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.circle,
-                                      color: Colors.greenAccent[400],
-                                      size: 10,
-                                    ),
-                                    Text(
-                                      'Active',
-                                      style: TextStyle(
-                                          fontFamily: "Poppins",
-                                          fontSize: 0.013 * hei,
-                                          color: Colors.greenAccent[400]),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0.02 * wid,
-                                  0.005 * hei, 0.02 * wid, 0.005 * hei),
-                              child: Text(
-                                "Need some food for..",
-                                style: TextStyle(
-                                    fontFamily: "Poppins",
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 0.015 * hei),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(
-                                  0.02 * wid, 0.001 * hei, 0, 0),
-                              child: Text(
-                                "Location",
-                                style: TextStyle(
-                                    fontFamily: "Poppins",
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 0.012 * hei,
-                                    color: red),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0.02 * wid, 0, 0, 0),
-                              child: Text(
-                                "T Nagar, Chennai",
-                                style: TextStyle(
-                                  fontFamily: "Poppins",
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 0.012 * hei,
-                                ),
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.02 * wid, 0.005 * hei, 0, 0),
-                                      child: Text(
-                                        "Target",
-                                        style: TextStyle(
-                                            fontFamily: "Poppins",
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 0.012 * hei,
-                                            color: red),
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.02 * wid, 0, 0, 0),
-                                      child: Text(
-                                        "3 A, 2 C",
-                                        style: TextStyle(
-                                          fontFamily: "Poppins",
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 0.012 * hei,
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 0.1 * wid,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.02 * wid, 0.005 * hei, 0, 0),
-                                      child: Text(
-                                        "Time",
-                                        style: TextStyle(
-                                            fontFamily: "Poppins",
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 0.012 * hei,
-                                            color: red),
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(
-                                          0.02 * wid, 0, 0, 0),
-                                      child: Text(
-                                        DateFormat('kk:mm a')
-                                            .format(DateTime.now()),
-                                        style: TextStyle(
-                                          fontFamily: "Poppins",
-                                          fontSize: 0.012 * hei,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                            Container(
-                              height: 0.03 * hei,
-                              width: 0.25 * wid,
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 0.02 * wid, vertical: 0.01 * hei),
-                              child: ElevatedButton(
-                                  style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              red)),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                carddetails2()));
-                                  },
-                                  child: Text(
-                                    "View Details",
-                                    style: TextStyle(
-                                        fontFamily: "Poppins",
-                                        fontSize: 0.01 * hei),
-                                  )),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ]),
-                ),
+                  );
+                },
               ),
               Container(
                 margin: EdgeInsets.only(left: 0.05 * wid),
@@ -848,45 +254,398 @@ class _DetailsPageState extends State<DetailsPage> {
                           fontWeight: FontWeight.w500,
                           fontSize: 20),
                     ),
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to all communities
+                      },
+                      child: Text(
+                        "View All",
+                        style: TextStyle(color: red, fontFamily: 'Poppins'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Top Communities Section
+              Consumer<CommunityProvider>(
+                builder: (context, communityProvider, child) {
+                  final topCommunities = communityProvider.topCommunities;
+
+                  if (topCommunities.isEmpty) {
+                    return Container(
+                      height: 0.1 * hei,
+                      child: Center(
+                        child: Text(
+                          'No communities available',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return Container(
+                    height: 0.1 * hei,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: topCommunities.length,
+                      itemBuilder: (context, index) {
+                        final community = topCommunities[index];
+                        return Container(
+                          margin: EdgeInsets.symmetric(horizontal: 8),
+                          child: CircleAvatar(
+                            radius: 50.0,
+                            backgroundImage: NetworkImage(community.imageUrl),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              )
+            ],
+          ),
+          // Quick Actions
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 0.05 * wid, vertical: 0.02 * hei),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CreateDonationPage()),
+                      );
+                    },
+                    icon: Icon(Icons.add, color: Colors.white),
+                    label: Text(
+                      'Raise Request',
+                      style: TextStyle(color: Colors.white, fontFamily: 'Poppins'),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 0.04 * wid),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/create-community');
+                    },
+                    icon: Icon(Icons.group_add, color: red),
+                    label: Text(
+                      'Join Community',
+                      style: TextStyle(color: red, fontFamily: 'Poppins'),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: red),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrgDonationCard(DonationModel donation, double wid, double hei) {
+    return Container(
+      width: 0.50 * wid,
+      margin: EdgeInsets.only(right: 16),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DonationDetailPage(donation: donation),
+            ),
+          );
+        },
+        child: Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 0.08 * hei,
+                padding: EdgeInsets.fromLTRB(0.02 * wid, 0.01 * hei, 0.02 * wid, 0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    donation.imageUrl,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[300],
+                        child: Icon(Icons.image, color: Colors.grey),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(0.03 * wid, 0.01 * hei, 0.03 * wid, 0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        donation.donorName,
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          fontWeight: FontWeight.w500,
+                          fontSize: 0.015 * hei,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (donation.organizationId != null)
+                      Icon(
+                        Icons.verified_sharp,
+                        color: red,
+                        size: 0.015 * hei,
+                      ),
                   ],
                 ),
               ),
               Container(
-                height: 0.1 * hei,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                padding: EdgeInsets.fromLTRB(0.025 * wid, 0, 0.02 * wid, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
                       children: [
-                        Container(
-                          child: CircleAvatar(
-                              radius: 50.0,
-                              backgroundImage:
-                                  AssetImage('assets/Ellipse 8.png')),
+                        Icon(
+                          Icons.add_location,
+                          color: red,
+                          size: 0.014 * hei,
                         ),
-                        Container(
-                          child: CircleAvatar(
-                              radius: 50.0,
-                              backgroundImage:
-                                  AssetImage('assets/Ellipse 7.png')),
-                        ),
-                        Container(
-                          child: CircleAvatar(
-                              radius: 50.0,
-                              backgroundImage:
-                                  AssetImage('assets/Ellipse 9.png')),
-                        ),
-                        Container(
-                          child: CircleAvatar(
-                            radius: 50.0,
-                            backgroundImage:
-                                AssetImage('assets/Rectangle 43.png'),
+                        Text(
+                          donation.location.length > 10 
+                              ? '${donation.location.substring(0, 10)}...' 
+                              : donation.location,
+                          style: TextStyle(
+                            fontFamily: "Poppins",
+                            fontSize: 0.013 * hei,
+                            color: red,
                           ),
-                        )
-                      ]),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      DateFormat('HH:mm').format(donation.createdAt),
+                      style: TextStyle(
+                        fontFamily: "Poppins",
+                        fontSize: 0.012 * hei,
+                        color: red,
+                      ),
+                    ),
+                  ],
                 ),
-              )
+              ),
+              Container(
+                height: 0.01 * hei,
+                margin: EdgeInsets.symmetric(horizontal: 0.02 * wid),
+                child: LinearPercentIndicator(
+                  animation: true,
+                  animationDuration: 1000,
+                  width: 0.46 * wid,
+                  lineHeight: 4,
+                  percent: donation.progressPercentage,
+                  backgroundColor: Colors.grey[300],
+                  progressColor: red,
+                  barRadius: Radius.circular(2),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 0.03 * wid,
+                  vertical: 0.004 * hei,
+                ),
+                child: Text(
+                  donation.fundingGoal != null 
+                      ? "₹ ${donation.currentFunding?.toStringAsFixed(0) ?? '0'}"
+                      : "${donation.currentServed}/${donation.targetCount} served",
+                  style: TextStyle(
+                    fontFamily: "Poppins",
+                    color: red,
+                    fontSize: 0.015 * hei,
+                  ),
+                ),
+              ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNearbyRequestCard(DonationModel donation, double wid, double hei) {
+    return Container(
+      width: 0.4 * wid,
+      margin: EdgeInsets.only(right: 16),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DonationDetailPage(donation: donation),
+            ),
+          );
+        },
+        child: Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(0.02 * wid),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.circle,
+                      color: donation.isActive ? Colors.green : Colors.grey,
+                      size: 10,
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      donation.isActive ? 'Active' : 'Completed',
+                      style: TextStyle(
+                        fontFamily: "Poppins",
+                        fontSize: 0.013 * hei,
+                        color: donation.isActive ? Colors.green : Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Text(
+                  donation.title.length > 20 
+                      ? '${donation.title.substring(0, 20)}...' 
+                      : donation.title,
+                  style: TextStyle(
+                    fontFamily: "Poppins",
+                    fontWeight: FontWeight.w500,
+                    fontSize: 0.015 * hei,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "Location",
+                  style: TextStyle(
+                    fontFamily: "Poppins",
+                    fontWeight: FontWeight.w500,
+                    fontSize: 0.012 * hei,
+                    color: red,
+                  ),
+                ),
+                Text(
+                  donation.location,
+                  style: TextStyle(
+                    fontFamily: "Poppins",
+                    fontWeight: FontWeight.w500,
+                    fontSize: 0.012 * hei,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Target",
+                          style: TextStyle(
+                            fontFamily: "Poppins",
+                            fontWeight: FontWeight.w500,
+                            fontSize: 0.012 * hei,
+                            color: red,
+                          ),
+                        ),
+                        Text(
+                          "${donation.adultsCount} A, ${donation.childrenCount} C",
+                          style: TextStyle(
+                            fontFamily: "Poppins",
+                            fontWeight: FontWeight.w500,
+                            fontSize: 0.012 * hei,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Time",
+                          style: TextStyle(
+                            fontFamily: "Poppins",
+                            fontWeight: FontWeight.w500,
+                            fontSize: 0.012 * hei,
+                            color: red,
+                          ),
+                        ),
+                        Text(
+                          DateFormat('HH:mm').format(donation.createdAt),
+                          style: TextStyle(
+                            fontFamily: "Poppins",
+                            fontSize: 0.012 * hei,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  height: 0.03 * hei,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DonationDetailPage(donation: donation),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      "View Details",
+                      style: TextStyle(
+                        fontFamily: "Poppins",
+                        fontSize: 0.01 * hei,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
